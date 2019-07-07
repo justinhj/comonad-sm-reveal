@@ -8,7 +8,7 @@
 
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/theme/solarized.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/monokai.css">
@@ -25,8 +25,165 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+			  <section data-markdown>
+			    ### Functors to Comonads in 30 minutes
+			    ##### Justin Heyes-Jones - July 2019
+			  </section>
+			  <section  data-markdown data-transition="slide">
+			    ### Cats
+			    
+			    [https://typelevel.org/cats](https://typelevel.org/cats)
+			    
+			    ![Cats](/images/cats.png)
+			    
+			    ![CategoryTheoryDiagram](/images/catstheory.png)
+			  </section>
+			  <section data-transition="slide">
+			    <h2>Type classes</h2>
+
+			    <p class="fragment">
+			      ad-hoc polymorphism
+			    </p>
+
+			    <p class="fragment">
+			      An interface that defines behavior
+			    </p>
+
+			    <p class="fragment">
+			      Separates data from behavior
+			    </p>
+
+			    <p class="fragment">
+			      Available in Scala, Haskell, Swift, Kotlin and more
+			    </p>
+
+			  </section>
+			  <section data-transition="slide">
+			    <h2>In Scala</h2>
+
+			    <p>Implemented as traits</p>
+
+			    <pre><code class="scala" data-trim>
+				trait Show {
+				  def show(a: A): String
+				}
+			      </code>
+			    </pre>
+
+			  </section>
+			  <section data-transition="slide">
+			    <h2>Show example</h2>
+
+			    <pre><code class="scala" data-trim>
+import cats._
+import cats.syntax.show._
+
+case class Person(name: String, yearOfBirth: Int)
+implicit def showPerson = new Show[Person] {
+  def show(p : Person) = s"Person: ${p.name} born ${p.yearOfBirth}"
+}  
+
+Person("Bob", 1989).show 
+// res5: String = "Person: Bob born 1989"
+			      </code>
+			    </pre>
+
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Functor</h2>
+
+			    <p>Our first type class from category theory...</p>
+			    
+			    <pre><code class="scala" data-trim>
+				trait Functor[F[_]] {
+				  def map[A, B](fa: F[A])(f: (A) ⇒ B): F[B]
+				}
+			      </code>
+			    </pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Functor - example</h2>
+
+			    <p>Mapping A values of a list to B values in a new list</p>
+			    
+			    <pre><code class="scala" data-trim>
+				import cats._
+				import cats.implicits._
+				
+				List("Hello", ",", "how", " ", "are", "you", "?").map(_.size) 
+				// List[Int] = List(5, 1, 3, 1, 3, 3, 1)
+			      </code>
+			    </pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Monad</h2>
+
+			    <pre><code class="scala" data-trim>
+trait Monad[F[_]] extends Functor[F] {
+  def pure[A](x: A): F[A] // Also known as unit
+  def flatMap[A, B](fa: F[A])(f: (A) ⇒ F[B]): F[B] // (bind)
+}
+			      </code>
+			    </pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Monad - Example</h2>
+
+			    <p>pure simply constructs the effect with a pure value of type A</p>
+			    
+			    <pre><code class="scala" data-trim>
+10.pure[List] 
+// List[Int] = List(10)
+			      </code>
+			    </pre>
+			  </section>
+
+
+			  <section data-transition="slide">
+			    <h2>Monad - FlatMap</h2>
+			    
+			    <pre><code class="scala" data-trim>
+				def intToDigits(n: Int) = 
+				  n.toString.toList.map(_.toString.toInt)
+								
+				intToDigits(1001) 
+				// List[Int] = List(1, 0, 0, 1)
+
+				def intToRepeat(n: Int) = 
+				  List.fill(n)(n)
+				
+				intToRepeat(5) 
+				// List[Int] = List(5, 5, 5, 5, 5)
+				
+				intToDigits(12345).flatMap(intToRepeat) 
+				// List[Int] = List(1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5)
+			      </code>			      
+			    </pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Monad - FlatMap</h2>
+
+			    <p>Using only Map we get this result...<p>
+
+			      <pre><code class="scala" data-trim>
+intToDigits(12345).map(intToRepeat) 
+// List[List[Int]] = List(List(1),
+// List(2, 2), List(3, 3, 3),
+// List(4, 4, 4, 4), List(5, 5, 5, 5, 5))
+			      </code>			      
+			      </pre>
+
+			    <p class="fragment">
+			      Flatmap is a MAP followed by a FLATTEN
+			    </p>
+			    
+			  </section>
+
 			</div>
 		</div>
 
