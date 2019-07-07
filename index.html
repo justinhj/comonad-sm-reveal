@@ -42,19 +42,19 @@
 			    <h2>Type classes</h2>
 
 			    <p class="fragment">
-			      ad-hoc polymorphism
+			      Ad-hoc polymorphism
 			    </p>
 
 			    <p class="fragment">
-			      An interface that defines behavior
+			      Interfaces in Go and Java
 			    </p>
 
 			    <p class="fragment">
-			      Separates data from behavior
+			      Separate data from behavior
 			    </p>
 
 			    <p class="fragment">
-			      Available in Scala, Haskell, Swift, Kotlin and more
+			      Scala, Haskell, Swift, Kotlin and more
 			    </p>
 
 			  </section>
@@ -67,8 +67,7 @@
 				trait Show {
 				  def show(a: A): String
 				}
-			      </code>
-			    </pre>
+			      </code></pre>
 
 			  </section>
 			  <section data-transition="slide">
@@ -85,11 +84,14 @@ implicit def showPerson = new Show[Person] {
 
 Person("Bob", 1989).show 
 // res5: String = "Person: Bob born 1989"
-			      </code>
-			    </pre>
+			      </code></pre>
 
 			  </section>
 
+			  <section data-transition="slide">
+			    <p>TODO data types</p>
+			  </section>
+			  
 			  <section data-transition="slide">
 			    <h2>Functor</h2>
 
@@ -99,8 +101,7 @@ Person("Bob", 1989).show
 				trait Functor[F[_]] {
 				  def map[A, B](fa: F[A])(f: (A) ⇒ B): F[B]
 				}
-			      </code>
-			    </pre>
+			      </code></pre>
 			  </section>
 
 			  <section data-transition="slide">
@@ -114,8 +115,7 @@ Person("Bob", 1989).show
 				
 				List("Hello", ",", "how", " ", "are", "you", "?").map(_.size) 
 				// List[Int] = List(5, 1, 3, 1, 3, 3, 1)
-			      </code>
-			    </pre>
+			      </code></pre>
 			  </section>
 
 			  <section data-transition="slide">
@@ -126,22 +126,19 @@ trait Monad[F[_]] extends Functor[F] {
   def pure[A](x: A): F[A] // Also known as unit
   def flatMap[A, B](fa: F[A])(f: (A) ⇒ F[B]): F[B] // (bind)
 }
-			      </code>
-			    </pre>
+			      </code></pre>
 			  </section>
 
 			  <section data-transition="slide">
-			    <h2>Monad - Example</h2>
+			    <h2>Monad - Pure</h2>
 
 			    <p>pure simply constructs the effect with a pure value of type A</p>
 			    
 			    <pre><code class="scala" data-trim>
 10.pure[List] 
 // List[Int] = List(10)
-			      </code>
-			    </pre>
+			      </code></pre>
 			  </section>
-
 
 			  <section data-transition="slide">
 			    <h2>Monad - FlatMap</h2>
@@ -161,8 +158,7 @@ trait Monad[F[_]] extends Functor[F] {
 				
 				intToDigits(12345).flatMap(intToRepeat) 
 				// List[Int] = List(1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5)
-			      </code>			      
-			    </pre>
+			      </code></pre>
 			  </section>
 
 			  <section data-transition="slide">
@@ -175,8 +171,7 @@ intToDigits(12345).map(intToRepeat)
 // List[List[Int]] = List(List(1),
 // List(2, 2), List(3, 3, 3),
 // List(4, 4, 4, 4), List(5, 5, 5, 5, 5))
-			      </code>			      
-			      </pre>
+			      </code></pre>
 
 			    <p class="fragment">
 			      Flatmap is a MAP followed by a FLATTEN
@@ -184,6 +179,68 @@ intToDigits(12345).map(intToRepeat)
 			    
 			  </section>
 
+			  <section data-transition="slide">
+			    <h2>Comonad</h2>
+
+			    <pre><code class="scala" data-trim>
+trait Comonad[F[_]] extends Functor[F] {
+  def extract[A](x: F[A]): A
+  def coflatMap[A, B](fa: F[A])(f: F[A] => B): F[B]
+}
+			      </code></pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Comonad - extract</h2>
+
+			    <p>Monad's pure</p>
+			    
+			    <pre><code class="scala" data-trim>
+				A => F[A]
+			    </code></pre>
+			    <p>Comonad's <em>dual</em> of pure, <em>extract</em></p>
+			    
+			    <pre><code class="scala" data-trim>
+				F[A] => A
+			      </code></pre>
+
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Comonad - Extract</h2>
+			    
+			    <pre><code class="scala" data-trim>
+import cats.data.NonEmptyList
+
+val nel1 = NonEmptyList.of(1,2,3,4,5) 
+// NonEmptyList[Int] = NonEmptyList(1, List(2, 3, 4, 5))
+
+nel1.extract 
+// Int = 1
+			      </code></pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Comonad - Unflatten</h2>
+
+			    <p>Unflatten is not part of Comonad's interface, but useful to show how <em>coflatMap</em> works</p>
+					   
+			    <pre><code class="scala" data-trim>
+def coflatten[A](fa: F[A]): F[F[A]]					       
+			      </code></pre>
+
+			    <pre class="fragment"><code class="scala" data-trim>
+val nel1 = NonEmptyList.of(1,2,3,4,5)  
+//NonEmptyList[Int] = NonEmptyList(1, List(2, 3, 4, 5))
+
+nel1.coflatten 
+// NonEmptyList[NonEmptyList[Int]] = NonEmptyList(
+//  NonEmptyList(1, List(2, 3, 4, 5)),
+//  List(NonEmptyList(2, List(3, 4, 5)), NonEmptyList(3, List(4, 5)), NonEmptyList(4, List(5)), NonEmptyList(5, List()))
+// )
+			      </code></pre>
+			  </section>
+			  
 			</div>
 		</div>
 
