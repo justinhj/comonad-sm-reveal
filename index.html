@@ -29,6 +29,23 @@
 			    ### Functors to Comonads in 30 minutes
 			    ##### Justin Heyes-Jones - July 2019
 			  </section>
+
+			  <section>
+			    <h2>Typed Functional Programming</h2>
+			    <p class="fragment">
+			      Pure functions
+			    </p>
+			    <p class="fragment">
+			      Plain old data with no subtyping
+			    </p>
+			    <p class="fragment">
+			      Type classses provide behavior
+			    </p>
+			    <p class="fragment">
+			      Make complex behaviors by composing simpler ones
+			    </p>
+			  </section>
+			  
 			  <section  data-markdown data-transition="slide">
 			    ### Cats
 			    
@@ -89,7 +106,20 @@ Person("Bob", 1989).show
 			  </section>
 
 			  <section data-transition="slide">
-			    <p>TODO data types</p>
+			    <h2>Data Types</h2>
+			    <p>Data types tend to have little built in behavior, instead we use type classes to manipulate them</p>
+			    
+			    <pre class="fragment"><code class="scala" data-trim>
+val e1: Either[String, Int] = Right(5) 
+e1: Either[String, Int] = Right(5)
+			      </code></pre>
+
+			    <pre class="fragment"><code class="scala" data-trim>
+val nel1: NonEmptyList[Int] = NonEmptyList.of(1,2,3)
+// nel1: NonEmptyList[Int] = NonEmptyList(1, List(2, 3))
+			      </code></pre>
+
+			    
 			  </section>
 			  
 			  <section data-transition="slide">
@@ -142,6 +172,8 @@ trait Monad[F[_]] extends Functor[F] {
 
 			  <section data-transition="slide">
 			    <h2>Monad - FlatMap</h2>
+
+			    <p>Flatmap lets us compose functions that take pure values and produce new values in some effect context</p>
 			    
 			    <pre><code class="scala" data-trim>
 				def intToDigits(n: Int) = 
@@ -240,6 +272,170 @@ nel1.coflatten
 // )
 			      </code></pre>
 			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Comonad - coflatMap</h2>
+
+			    <pre><code class="scala" data-trim>
+NonEmptyList.of(1,2, 3, 4, 5).coflatMap(_.size) 
+//NonEmptyList[Int] = NonEmptyList(5, List(4, 3, 2, 1))
+			      </code></pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Focused Grid</h2>
+
+			    <p>My custom data type for image processing</p>
+			    
+			    <pre><code class="scala" data-trim>
+				case class FocusedGrid[A](focus: Tuple2[Int,Int],
+				  grid : Vector[Vector[A]])
+			    </code></pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Focused Grid</h2>
+
+			    <p><em>extract</em> gives the grid value at the focus</p>
+
+			    <p>coflatten gives us the grid from <b>all</b> focus points</p>
+			    
+			    <pre><code class="scala" style="font-size: 0.5em" data-trim>
+FocusedGrid((0,0), Vector(Vector(5,3,0),Vector(3,1,0),Vector(0,0,0))).coflatten
+				
+FocusedGrid(
+  (0, 0),
+  Vector(
+    Vector(
+      FocusedGrid((0, 0), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
+      FocusedGrid((0, 1), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
+      FocusedGrid((0, 2), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0)))
+    ),
+    Vector(
+      FocusedGrid((1, 0), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
+      FocusedGrid((1, 1), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
+      FocusedGrid((1, 2), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0)))
+    ),
+    Vector(
+      FocusedGrid((2, 0), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
+      FocusedGrid((2, 1), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
+      FocusedGrid((2, 2), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0)))
+    )
+  )
+)
+			    </code></pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <h2>Box filter</h2>
+
+			    <p>Take an average of a box of pixels around the focus point</p>
+			    
+			    <pre><code class="scala" data-trim>
+def boxFilter(width: Int): FocusedGrid[(Int, Int, Int)] => (Int, Int, Int) = { fg =>
+    val widthSqr = width * width
+    val sum = localSum(fg, (255, 255, 255), width)
+    ((sum._1 / widthSqr).toInt, (sum._2 / widthSqr).toInt, (sum._3 / widthSqr).toInt)
+}
+			      </code></pre>
+			  </section>
+
+			  <section data-transition="slide">
+			    <p>No filtering</p>
+			    <p>
+			    <img src="/images/girl.png"/>
+			    </p>
+			  </section>
+			  			    
+			  <section data-transition="slide">
+			    <p>Box filter width 5 pixels</p>
+
+			    <pre><code class="scala" data-trim>			    
+				originalImage.coflatMap(boxFilter(5))
+			    </code></pre>
+			    
+			    <p>
+			      <img src="/images/girlsmoothed5.png"/>
+			    </p>
+			  </section>
+
+			  <section data-transition="slide">
+			    <p>Box filter width 15 pixels</p>
+			    <pre><code class="scala" data-trim>			    
+				originalImage.coflatMap(boxFilter(15))
+			    </code></pre>
+
+			    <p>
+			      <img src="/images/girlsmoothed15.png"/>
+			    </p>
+			  </section>
+
+			  <section data-transition="slide">
+			    <p>Compose a sequence of transformations</p>
+
+			    <pre><code class="scala" data-trim>			    
+				val processed = originalImage.coflatMap(boxFilter(9)).
+				  coflatMap(mirrorHorizontal)
+				val processedImage = focusedGridToImage(processed)
+			    </code></pre>
+			    
+			    <p>
+			      <img src="/images/mirrorandblur.png"/>
+			    </p>
+			  </section>
+
+			  <section data-transition="slide">
+			    <p>Transform in parallel then merge</p>
+			    
+			    <pre><code class="scala" data-trim>			    
+				val ck1 = Cokleisli(mirrorVertical)
+				val ck2 = Cokleisli(mirrorHorizontal)
+
+				val ck1ck2Compose = ck1.
+				  product(ck2).
+				  map(blendTuple)
+
+				val ck1ck2ComposedProcess = originalImage.
+				  coflatMap(ck1ck2Compose.run)
+			    </code></pre>
+
+			  </section>
+			  <section data-transition="slide">
+			    <p>Transform in parallel then merge</p>
+			    <p>	
+			      <img src="/images/ck1ck2mirrorandidentity.png"/>
+			    </p>
+			  </section>
+
+			  <section data-markdown data-transition="concave" style="font-size: 0.7em">
+			    ## Related blog post
+			    [http://justinhj.github.io/2019/06/20/comonads-for-life.html](http://justinhj.github.io/2019/06/20/comonads-for-life.html)
+			  </section>
+			  
+			  <section data-markdown data-transition="concave" style="font-size: 0.7em">			    
+## References
+
+Bartosz Milewski - Categories for Programmers
+
+[https://bartoszmilewski.com/2017/01/02/comonads/](https://bartoszmilewski.com/2017/01/02/comonads/)
+
+Eli Jordan - Life is Comonad
+
+[https://eli-jordan.github.io/2018/02/16/life-is-a-comonad/](https://eli-jordan.github.io/2018/02/16/life-is-a-comonad/)
+
+Cats API documentation
+
+[https://typelevel.org/cats/api/cats/Comonad.html](https://typelevel.org/cats/api/cats/Comonad.html)
+
+Functional Programming in Scala
+
+[http://blog.higher-order.com/blog/2015/06/23/a-scala-comonad-tutorial/](http://blog.higher-order.com/blog/2015/06/23/a-scala-comonad-tutorial/)
+
+Otfried Cheong - Image Processing in Scala
+
+[http://otfried.org/scala/image.html](http://otfried.org/scala/image.html)
+			  </section>
+
 			  
 			</div>
 		</div>
