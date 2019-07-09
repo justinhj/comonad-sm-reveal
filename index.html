@@ -31,19 +31,23 @@
 			  </section>
 
 			  <section>
-			    <h2>Typed Functional Programming</h2>
+			    <h2>Agenda</h2>
 			    <p class="fragment">
-			      Pure functions
+			      Cats fp library
 			    </p>
 			    <p class="fragment">
-			      Data Types
+			      Functors
 			    </p>
 			    <p class="fragment">
-			      Type Classses
+			      Monads
 			    </p>
 			    <p class="fragment">
-			      Composition
+			      Comonads
 			    </p>
+			    <p class="fragment">
+			      Image processing with comonads
+			    </p>
+
 			  </section>
 			  
 			  <section  data-markdown data-transition="slide">
@@ -52,8 +56,11 @@
 			    [https://typelevel.org/cats](https://typelevel.org/cats)
 			    
 			    ![Cats](./images/cats.png)
-			    
 			    ![CategoryTheoryDiagram](./images/catstheory.png)
+			   
+			    Category Theory
+			    
+			    Branch of mathematics describing general abstract structures
 			  </section>
 			  <section data-transition="slide">
 			    <h2>Type classes</h2>
@@ -83,7 +90,7 @@
 			    <p>Type classes are implemented as traits</p>
 
 			    <pre><code class="scala" data-trim>
-				trait Show {
+				trait Show[A] {
 				  def show(a: A): String
 				}
 			      </code></pre>
@@ -97,6 +104,7 @@ import cats._
 import cats.syntax.show._
 
 case class Person(name: String, yearOfBirth: Int)
+
 implicit def showPerson = new Show[Person] {
   def show(p : Person) = s"Person: ${p.name} born ${p.yearOfBirth}"
 }  
@@ -135,12 +143,9 @@ val nel1: NonEmptyList[Int] = NonEmptyList.of(1,2,3)
 			  <section data-transition="slide">
 			    <h2>Functor</h2>
 
-			    <p>Cats comes from category as in category theory</p>
-			    <p class="fragment">Most Type Classes in Cats get their names and behavior from there too</p>
-			    
 			    <pre class="fragment"><code class="scala" data-trim>
 				trait Functor[F[_]] {
-				  def map[A, B](fa: F[A])(f: (A) ⇒ B): F[B]
+				  def map[A, B](fa: F[A])(f: A -> B): F[B]
 				}
 			      </code></pre>
 			  </section>
