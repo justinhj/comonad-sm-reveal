@@ -8,7 +8,7 @@
 
 		<link rel="stylesheet" href="css/reset.css">
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/league.css">
+		<link rel="stylesheet" href="css/theme/moon.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/monokai.css">
@@ -36,13 +36,13 @@
 			      Pure functions
 			    </p>
 			    <p class="fragment">
-			      Plain old data with no subtyping
+			      Data Types
 			    </p>
 			    <p class="fragment">
-			      Type classses provide behavior
+			      Type Classses
 			    </p>
 			    <p class="fragment">
-			      Make complex behaviors by composing simpler ones
+			      Composition
 			    </p>
 			  </section>
 			  
@@ -63,10 +63,6 @@
 			    </p>
 
 			    <p class="fragment">
-			      Interfaces in Go and Java
-			    </p>
-
-			    <p class="fragment">
 			      Separate data from behavior
 			    </p>
 
@@ -75,10 +71,16 @@
 			    </p>
 
 			  </section>
-			  <section data-transition="slide">
-			    <h2>In Scala</h2>
 
-			    <p>Implemented as traits</p>
+			  <section data-transition="slide">
+			    <h2>Type classes</h2>
+			    <img src="./images/typeclasses.png" class="stretch" style="width: 66%"/>
+			  </section>
+			  
+			  <section data-transition="slide">
+			    <h2>Scala</h2>
+
+			    <p>Type classes are implemented as traits</p>
 
 			    <pre><code class="scala" data-trim>
 				trait Show {
@@ -107,7 +109,7 @@ Person("Bob", 1989).show
 
 			  <section data-transition="slide">
 			    <h2>Data Types</h2>
-			    <p>Data types tend to have little built in behavior, instead we use type classes to manipulate them</p>
+			    <p>Cats and Scala have many useful data types with type class instances</p>
 			    
 			    <pre class="fragment"><code class="scala" data-trim>
 val e1: Either[String, Int] = Right(5) 
@@ -121,13 +123,22 @@ val nel1: NonEmptyList[Int] = NonEmptyList.of(1,2,3)
 
 			    
 			  </section>
-			  
+
+			  <section data-transition="slide">
+			    <h2>Data Types</h2>
+			    <p>
+			    <img src="./images/datatypes1.png" class="stretch" style="width: 20%"/>
+			    <img src="./images/datatypes2.png" class="stretch" style="width: 20%"/>
+			    </p>
+			  </section>
+
 			  <section data-transition="slide">
 			    <h2>Functor</h2>
 
-			    <p>Our first type class from category theory...</p>
+			    <p>Cats comes from category as in category theory</p>
+			    <p class="fragment">Most Type Classes in Cats get their names and behavior from there too</p>
 			    
-			    <pre><code class="scala" data-trim>
+			    <pre class="fragment"><code class="scala" data-trim>
 				trait Functor[F[_]] {
 				  def map[A, B](fa: F[A])(f: (A) ⇒ B): F[B]
 				}
@@ -137,7 +148,7 @@ val nel1: NonEmptyList[Int] = NonEmptyList.of(1,2,3)
 			  <section data-transition="slide">
 			    <h2>Functor - example</h2>
 
-			    <p>Mapping A values of a list to B values in a new list</p>
+			    <p>Maps values of type A in a list to values of type B in a new list</p>
 			    
 			    <pre><code class="scala" data-trim>
 				import cats._
@@ -153,8 +164,8 @@ val nel1: NonEmptyList[Int] = NonEmptyList.of(1,2,3)
 
 			    <pre><code class="scala" data-trim>
 trait Monad[F[_]] extends Functor[F] {
-  def pure[A](x: A): F[A] // Also known as unit
-  def flatMap[A, B](fa: F[A])(f: (A) ⇒ F[B]): F[B] // (bind)
+  def pure[A](x: A): F[A] // Also known as unit and return
+  def flatMap[A, B](fa: F[A])(f: (A) ⇒ F[B]): F[B] // (also bind)
 }
 			      </code></pre>
 			  </section>
@@ -225,12 +236,12 @@ trait Comonad[F[_]] extends Functor[F] {
 			  <section data-transition="slide">
 			    <h2>Comonad - extract</h2>
 
-			    <p>Monad's pure</p>
+			    <p>Monad: pure</p>
 			    
 			    <pre><code class="scala" data-trim>
 				A => F[A]
 			    </code></pre>
-			    <p>Comonad's <em>dual</em> of pure, <em>extract</em></p>
+			    <p>Comonad: <em>dual</em> of pure is <em>extract</em></p>
 			    
 			    <pre><code class="scala" data-trim>
 				F[A] => A
@@ -255,7 +266,7 @@ nel1.extract
 			  <section data-transition="slide">
 			    <h2>Comonad - Unflatten</h2>
 
-			    <p>Unflatten is not part of Comonad's interface, but useful to show how <em>coflatMap</em> works</p>
+			    <p>Unflatten is not part of Comonad's interface, but useful to understand <em>coflatMap</em></p>
 					   
 			    <pre><code class="scala" data-trim>
 def coflatten[A](fa: F[A]): F[F[A]]					       
@@ -374,9 +385,9 @@ def boxFilter(width: Int): FocusedGrid[(Int, Int, Int)] => (Int, Int, Int) = { f
 			    <p>Compose a sequence of transformations</p>
 
 			    <pre><code class="scala" data-trim>			    
-				val processed = originalImage.coflatMap(boxFilter(9)).
+				originalImage.
+				  coflatMap(boxFilter(9)).
 				  coflatMap(mirrorHorizontal)
-				val processedImage = focusedGridToImage(processed)
 			    </code></pre>
 			    
 			    <p>
