@@ -1,0 +1,32 @@
+Speech notes
+
+before we get to the Show typeclass I want to communicate
+
+ i work at yoppworks providing functional and reactive solutions to business problems
+ we're hiring
+ 
+
+I've done blog posts about fp and contributed
+  zio cats fetch tapir
+
+cats library is category theory
+
+category theory is not required to be a good fp programmer
+
+but if you find it fun then it's all good
+
+map, flatmap = functor and monad
+
+rob norris really good talk https://youtu.be/30q6BkBv5MY
+
+  a function maps values to values
+  evaluation always gives the same answer
+  referential transparency
+  function composition
+  talks about list, reader, option, state
+  
+add as reference? https://youtu.be/30q6BkBv5MY Rob Norris Functional Programming with Effects by Rob Norris
+
+
+
+1. functional progamming benefits are

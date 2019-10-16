@@ -26,14 +26,15 @@
 		<div class="reveal">
 			<div class="slides">
 			  <section data-markdown>
-			    ### Functors to Comonads in 30 minutes
-			    ##### Justin Heyes-Jones - July 2019
+			    ### Using Comonads
+			    ##### Justin Heyes-Jones - Software Developer at Yoppworks
+			    ##### Scala Meetup October 2019
 			  </section>
 
 			  <section>
 			    <h2>Agenda</h2>
 			    <p class="fragment">
-			      Cats fp library
+			      Type Classes
 			    </p>
 			    <p class="fragment">
 			      Functors
@@ -51,17 +52,21 @@
 			  </section>
 			  
 			  <section  data-markdown data-transition="slide">
-			    ### Cats
+			    ### Functional Programming in Scala
+
+			    #### For more on functional programming
 			    
-			    [https://typelevel.org/cats](https://typelevel.org/cats)
-			    
-			    ![Cats](./images/cats.png)
-			    ![CategoryTheoryDiagram](./images/catstheory.png)
-			   
-			    Category Theory
-			    
-			    Branch of mathematics describing general abstract structures
+			    ![Functional Programming in Scala book image](./images/fpinscala.jpg)
 			  </section>
+
+			  <section  data-markdown data-transition="slide">
+			    ### Category Theory for Programmers
+
+			    #### For more on Category Theory
+			    
+			    ![Category Theory book image](./images/categorytheory.png)
+			  </section>
+
 			  <section data-transition="slide">
 			    <h2>Type classes</h2>
 
@@ -74,20 +79,36 @@
 			    </p>
 
 			    <p class="fragment">
-			      Scala, Haskell, Swift, Kotlin and more
+			      Scala, Haskell, Swift (Bow), Kotlin (Arrow) and more
 			    </p>
 
 			  </section>
 
+                          <section  data-markdown data-transition="slide">
+                            ### Cats functional programming library
+
+                            [https://typelevel.org/cats](https://typelevel.org/cats)
+                            
+                            ![Cats](./images/cats.png)
+			    ![CategoryTheoryDiagram](./images/catstheory.png)
+                            
+                            Describes mathematical concepts as objects and mappings between them
+                          </section>
+			  
 			  <section data-transition="slide">
 			    <h2>Type classes</h2>
 			    <img src="./images/typeclasses.png" class="stretch" style="width: 66%"/>
 			  </section>
-			  
+
+			  <section data-transition="slide">
+			    <h2>Functors, Monads and Comonads</h2>
+			    <img src="./images/typeclasseszoom.png" class="stretch" style="width: 66%"/>
+			  </section>
+
 			  <section data-transition="slide">
 			    <h2>Scala</h2>
 
-			    <p>Type classes are implemented as traits</p>
+			    <p>Type classes are typically implemented as traits</p>
 
 			    <pre><code class="scala" data-trim>
 				trait Show[A] {
@@ -120,8 +141,8 @@ Person("Bob", 1989).show
 			    <p>Cats and Scala have many useful data types with type class instances</p>
 			    
 			    <pre class="fragment"><code class="scala" data-trim>
-val e1: Either[String, Int] = Right(5) 
-e1: Either[String, Int] = Right(5)
+				val e1 = 5.asRight[String]
+				e1: Either[String, Int] = Right(5)
 			      </code></pre>
 
 			    <pre class="fragment"><code class="scala" data-trim>
@@ -314,7 +335,7 @@ NonEmptyList.of(1,2, 3, 4, 5).coflatMap(_.size)
 
 			    <p><em>extract</em> gives the grid value at the focus</p>
 
-			    <p>coflatten gives us the grid from <b>all</b> focus points</p>
+			    <p><em>coflatten</em> gives us the grid from <b>all</b> focus points</p>
 			    
 			    <pre><code class="scala" style="font-size: 0.5em" data-trim>
 FocusedGrid((0,0), Vector(Vector(5,3,0),Vector(3,1,0),Vector(0,0,0))).coflatten
@@ -331,14 +352,8 @@ FocusedGrid(
       FocusedGrid((1, 0), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
       FocusedGrid((1, 1), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
       FocusedGrid((1, 2), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0)))
-    ),
-    Vector(
-      FocusedGrid((2, 0), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
-      FocusedGrid((2, 1), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0))),
-      FocusedGrid((2, 2), Vector(Vector(5, 3, 0), Vector(3, 1, 0), Vector(0, 0, 0)))
-    )
-  )
-)
+    ), ...
+
 			    </code></pre>
 			  </section>
 
@@ -431,7 +446,7 @@ def boxFilter(width: Int): FocusedGrid[(Int, Int, Int)] => (Int, Int, Int) = { f
 			  <section data-markdown data-transition="concave" style="font-size: 0.7em">			    
 ## References
 
-Bartosz Milewski - Categories for Programmers
+Bartosz Milewski - Comonads
 
 [https://bartoszmilewski.com/2017/01/02/comonads/](https://bartoszmilewski.com/2017/01/02/comonads/)
 
@@ -439,11 +454,11 @@ Eli Jordan - Life is Comonad
 
 [https://eli-jordan.github.io/2018/02/16/life-is-a-comonad/](https://eli-jordan.github.io/2018/02/16/life-is-a-comonad/)
 
-Cats API documentation
+Cats Comonad documentation
 
-[https://typelevel.org/cats/api/cats/Comonad.html](https://typelevel.org/cats/api/cats/Comonad.html)
+[https://typelevel.org/cats/typeclasses/comonad.html](https://typelevel.org/cats/typeclasses/comonad.html)
 
-Functional Programming in Scala
+Runár Bjarnason - Comonad tutorial
 
 [http://blog.higher-order.com/blog/2015/06/23/a-scala-comonad-tutorial/](http://blog.higher-order.com/blog/2015/06/23/a-scala-comonad-tutorial/)
 
