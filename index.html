@@ -31,19 +31,19 @@
 			    ##### Scala Meetup October 2019
 			  </section>
 
+			  <section  data-markdown data-transition="slide">
+			    ### Functional Programming Meetup
+
+			    ![Functional Programming Meetup image](./images/fpmeetup.png)
+			  </section>
+			  
 			  <section>
 			    <h2>Agenda</h2>
 			    <p class="fragment">
 			      Type Classes
 			    </p>
 			    <p class="fragment">
-			      Functors
-			    </p>
-			    <p class="fragment">
-			      Monads
-			    </p>
-			    <p class="fragment">
-			      Comonads
+			      Functors, Monads, Comonads
 			    </p>
 			    <p class="fragment">
 			      Image processing with comonads
@@ -71,15 +71,15 @@
 			    <h2>Type classes</h2>
 
 			    <p class="fragment">
+			      Like Java interfaces
+			    </p>
+
+			    <p class="fragment">
 			      Ad-hoc polymorphism
 			    </p>
 
 			    <p class="fragment">
-			      Separate data from behavior
-			    </p>
-
-			    <p class="fragment">
-			      Scala, Haskell, Swift (Bow), Kotlin (Arrow) and more
+			      Haskell, Scala(Cats,Scalaz), Swift (Bow), Kotlin (Arrow) ...
 			    </p>
 
 			  </section>
@@ -88,11 +88,12 @@
                             ### Cats functional programming library
 
                             [https://typelevel.org/cats](https://typelevel.org/cats)
-                            
+
+                            Category Theory describes mathematical concepts as objects and mappings between them
+
                             ![Cats](./images/cats.png)
 			    ![CategoryTheoryDiagram](./images/catstheory.png)
-                            
-                            Describes mathematical concepts as objects and mappings between them
+
                           </section>
 			  
 			  <section data-transition="slide">
@@ -439,12 +440,15 @@ def boxFilter(width: Int): FocusedGrid[(Int, Int, Int)] => (Int, Int, Int) = { f
 			  </section>
 
 			  <section data-markdown data-transition="concave" style="font-size: 0.7em">
-			    ## Related blog post
-			    [http://justinhj.github.io/2019/06/20/comonads-for-life.html](http://justinhj.github.io/2019/06/20/comonads-for-life.html)
+			    ## Questions?
 			  </section>
 			  
 			  <section data-markdown data-transition="concave" style="font-size: 0.7em">			    
 ## References
+
+Original Blogpost 
+
+[http://justinhj.github.io/2019/06/20/comonads-for-life.html](http://justinhj.github.io/2019/06/20/comonads-for-life.html)
 
 Bartosz Milewski - Comonads
 
